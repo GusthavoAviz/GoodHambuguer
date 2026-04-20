@@ -1,0 +1,26 @@
+# Documentação e Desafio
+*.md
+*.pdf
+DESAFIO_RULES.md
+GEMINI.md
+CRONOGRAMA.md
+Desafio.pdf
+
+# .NET / Visual Studio
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.userosscache
+*.sln.doccache
+*.suo
+
+# Variáveis de Ambiente
+*.env
+variaveisConexao.env
+
+# Dados
+orders.json
+
+# Sistema
+.DS_Store
