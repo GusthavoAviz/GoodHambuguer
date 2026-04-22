@@ -1,0 +1,37 @@
+[
+  {
+    "Id": "f9059c4d-e93b-4277-8e81-19ad883aa988",
+    "Nome": "X Burger",
+    "Preco": 5.00,
+    "Categoria": 0,
+    "Ativo": true
+  },
+  {
+    "Id": "2ecb3adc-1776-4471-ad27-cdc463a336ef",
+    "Nome": "X Egg",
+    "Preco": 4.50,
+    "Categoria": 0,
+    "Ativo": true
+  },
+  {
+    "Id": "e6f51982-76a2-4c3b-b48a-f8b05ae276ac",
+    "Nome": "X Bacon",
+    "Preco": 7.00,
+    "Categoria": 0,
+    "Ativo": true
+  },
+  {
+    "Id": "a068d5bf-0956-437d-b03c-7f461a143f0d",
+    "Nome": "Batata frita",
+    "Preco": 2.00,
+    "Categoria": 1,
+    "Ativo": true
+  },
+  {
+    "Id": "f533cc14-80e4-4ca7-b3bb-3e3092f7589a",
+    "Nome": "Refrigerante",
+    "Preco": 2.50,
+    "Categoria": 2,
+    "Ativo": true
+  }
+]

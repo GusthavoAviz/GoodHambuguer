@@ -1,0 +1,156 @@
+[
+  {
+    "Id": "3d6ebea4-a787-49e3-b20a-c504a5d9a2b4",
+    "Itens": [
+      {
+        "Id": "1c141d23-650e-4382-b177-4ee68c4bc3e2",
+        "Nome": "Refrigerante",
+        "Preco": 2.50,
+        "Categoria": 2,
+        "Ativo": true
+      },
+      {
+        "Id": "e7b936c0-10a5-44ea-99c3-3cd20555074f",
+        "Nome": "Batata frita",
+        "Preco": 2.00,
+        "Categoria": 1,
+        "Ativo": true
+      }
+    ],
+    "CriadoEm": "2026-04-21T11:50:23.5392131Z"
+  },
+  {
+    "Id": "42cef63c-5664-4936-85de-16efd23c9094",
+    "Itens": [
+      {
+        "Id": "cf0fb0b7-ab74-4219-914b-9e3628874ed7",
+        "Nome": "X Burger",
+        "Preco": 5.00,
+        "Categoria": 0,
+        "Ativo": true
+      },
+      {
+        "Id": "e4e4f001-4c09-495e-b72b-416d6a5720eb",
+        "Nome": "Batata frita",
+        "Preco": 2.00,
+        "Categoria": 1,
+        "Ativo": true
+      },
+      {
+        "Id": "ef47aefc-de58-473c-bc2b-b17243700241",
+        "Nome": "Refrigerante",
+        "Preco": 2.50,
+        "Categoria": 2,
+        "Ativo": true
+      }
+    ],
+    "CriadoEm": "2026-04-21T11:51:40.3662848Z"
+  },
+  {
+    "Id": "46730fc3-7ca8-4958-917d-6c302ee92a72",
+    "Itens": [
+      {
+        "Id": "563aa06c-6766-4fc7-9177-455d8b7280ea",
+        "Nome": "X Burger",
+        "Preco": 5.00,
+        "Categoria": 0,
+        "Ativo": true
+      },
+      {
+        "Id": "77dae7cf-28be-4b7f-b656-6b621e213657",
+        "Nome": "Batata frita",
+        "Preco": 2.00,
+        "Categoria": 1,
+        "Ativo": true
+      },
+      {
+        "Id": "777f6196-432b-48f7-aad9-29f9b49b2d6b",
+        "Nome": "Refrigerante",
+        "Preco": 2.50,
+        "Categoria": 2,
+        "Ativo": true
+      }
+    ],
+    "CriadoEm": "2026-04-21T11:57:26.1001062Z"
+  },
+  {
+    "Id": "2f65abdd-b248-4de1-bc28-7c82fc464624",
+    "Itens": [
+      {
+        "Id": "2afd0c38-5d5c-42f9-8f79-a23d2bad4786",
+        "Nome": "X Egg",
+        "Preco": 4.50,
+        "Categoria": 0,
+        "Ativo": true
+      },
+      {
+        "Id": "1a2beb2d-4d09-4759-9efe-53f58ab5c2cd",
+        "Nome": "Refrigerante",
+        "Preco": 2.50,
+        "Categoria": 2,
+        "Ativo": true
+      },
+      {
+        "Id": "8e855a1e-e398-493f-8785-74b66cf706ba",
+        "Nome": "Batata frita",
+        "Preco": 2.00,
+        "Categoria": 1,
+        "Ativo": true
+      }
+    ],
+    "CriadoEm": "2026-04-21T12:01:17.9724123Z"
+  },
+  {
+    "Id": "85c98038-1aea-4bb9-a486-fe368a8524e1",
+    "Itens": [
+      {
+        "Id": "42ea5f2e-03f2-40c7-adfa-ade0781360b1",
+        "Nome": "Refrigerante",
+        "Preco": 2.50,
+        "Categoria": 2,
+        "Ativo": true
+      }
+    ],
+    "CriadoEm": "2026-04-21T12:02:11.0985246Z"
+  },
+  {
+    "Id": "a977c8e4-79c9-45e1-954c-1b27fc1ea10b",
+    "Itens": [
+      {
+        "Id": "e6f51982-76a2-4c3b-b48a-f8b05ae276ac",
+        "Nome": "X Bacon",
+        "Preco": 7.00,
+        "Categoria": 0,
+        "Ativo": true
+      }
+    ],
+    "CriadoEm": "2026-04-21T12:19:35.7398105Z"
+  },
+  {
+    "Id": "185b4ce4-4563-4325-8bf9-8e68f48b7296",
+    "Itens": [
+      {
+        "Id": "a068d5bf-0956-437d-b03c-7f461a143f0d",
+        "Nome": "Batata frita",
+        "Preco": 2.00,
+        "Categoria": 1,
+        "Ativo": true
+      },
+      {
+        "Id": "f533cc14-80e4-4ca7-b3bb-3e3092f7589a",
+        "Nome": "Refrigerante",
+        "Preco": 2.50,
+        "Categoria": 2,
+        "Ativo": true
+      },
+      {
+        "Id": "8caf92ae-2d5e-4d02-bd74-7706c88f5d80",
+        "Nome": "X Tudo",
+        "Preco": 12,
+        "Categoria": 0,
+        "Ativo": true
+      }
+    ],
+    "CriadoEm": "2026-04-21T13:12:05.3068428Z"
+  }
+]

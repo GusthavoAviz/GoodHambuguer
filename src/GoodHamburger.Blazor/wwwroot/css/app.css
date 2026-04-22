@@ -1,0 +1,111 @@
+/* Estilos Base Modernos e Harmoniosos */
+:root {
+    --hamburger-primary: #0d6efd;
+    --hamburger-primary-hover: #0b5ed7;
+    --hamburger-success: #198754;
+    --hamburger-success-hover: #157347;
+    --hamburger-danger: #dc3545;
+    --hamburger-danger-hover: #bb2d3b;
+    --transition-speed: 0.25s;
+    --border-radius-lg: 12px;
+}
+
+[data-bs-theme="light"] {
+    --nav-bg: rgba(255, 255, 255, 0.9);
+    --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    --action-btn-bg: #f8f9fa;
+}
+
+[data-bs-theme="dark"] {
+    --bs-body-bg: #0f1112;
+    --bs-body-color: #e9ecef;
+    --bs-tertiary-bg: #1a1d1f;
+    --bs-secondary-bg: #212529;
+    --nav-bg: rgba(15, 17, 18, 0.9);
+    --card-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    --action-btn-bg: #2d3238;
+}
+
+html, body {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+/* Glassmorphism para Navbar */
+.navbar {
+    z-index: 1050;
+    backdrop-filter: blur(10px);
+    background-color: var(--nav-bg) !important;
+}
+
+/* Botões Customizados */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all var(--transition-speed) ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary { background-color: var(--hamburger-primary); border-color: var(--hamburger-primary); }
+.btn-primary:hover { background-color: var(--hamburger-primary-hover); transform: translateY(-1px); }
+
+.btn-success { background-color: var(--hamburger-success); border-color: var(--hamburger-success); }
+.btn-success:hover { background-color: var(--hamburger-success-hover); transform: translateY(-1px); }
+
+/* Botões de Ação na Tabela */
+.btn-action {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
+    background-color: var(--action-btn-bg);
+    border: 1px solid transparent;
+    border-radius: 8px;
+}
+
+.btn-action:hover {
+    transform: scale(1.1);
+}
+
+.btn-action-edit:hover { color: var(--hamburger-primary); border-color: var(--hamburger-primary); }
+.btn-action-delete:hover { color: var(--hamburger-danger); border-color: var(--hamburger-danger); }
+
+/* Card Improvements */
+.card {
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: var(--card-shadow);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+[data-bs-theme="dark"] .card {
+    border-color: rgba(255,255,255,0.05);
+}
+
+/* Esconder barra de erro padrão do Blazor (só mostra se erro ocorrer) */
+#blazor-error-ui {
+    display: none;
+}
+
+/* Estilos do NavMenu */
+.brand-text { font-size: 1.25rem; letter-spacing: -0.5px; }
+.nav-link { font-weight: 600; color: var(--bs-body-color); transition: all 0.2s ease; border-radius: 8px; margin: 0 2px; }
+.nav-link:hover { background-color: rgba(25, 135, 84, 0.1); color: var(--bs-success); }
+.nav-link.active { color: var(--bs-success) !important; background-color: rgba(25, 135, 84, 0.1); }
+.dropdown-item { border-radius: 6px; margin: 0 4px; width: auto; }
+.dropdown-item.active { background-color: var(--bs-success); color: white; }
+.theme-switch-container { border: 1px solid rgba(0,0,0,0.05); }
+[data-bs-theme="dark"] .theme-switch-container { border-color: rgba(255,255,255,0.05); }
+
+/* Estilos de Produtos */
+.custom-switch { cursor: pointer; width: 3em; height: 1.5em; }
+.custom-switch:checked { background-color: var(--hamburger-success); border-color: var(--hamburger-success); }
+.grayscale { filter: grayscale(1) opacity(0.6); }
+.product-icon { font-size: 1.2rem; }
+
+/* Animações Globais */
+.animate { animation-duration: 0.4s; animation-fill-mode: both; }
+.slideIn { animation-name: slideIn; }
+@keyframes slideIn { 0% { transform: translateY(10px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }

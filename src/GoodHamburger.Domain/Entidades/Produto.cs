@@ -11,4 +11,5 @@ public class Produto
     public string Nome { get; set; } = string.Empty;
     public decimal Preco { get; set; }
     public CategoriaProduto Categoria { get; set; }
+    public bool Ativo { get; set; } = true;
 }

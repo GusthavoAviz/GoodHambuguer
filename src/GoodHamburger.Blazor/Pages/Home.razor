@@ -1,0 +1,226 @@
+@page "/"
+@using GoodHamburger.Application.DTOs
+@using GoodHamburger.Domain.Enums
+@inject HttpClient Http
+
+<PageTitle>Good Hamburger - Cardápio</PageTitle>
+
+<div class="container">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-0 text-body">✨ Realizar Pedido</h2>
+        <p class="text-secondary">Monte seu combo perfeito e aproveite os descontos!</p>
+    </div>
+
+    <div class="row">
+        <!-- Cardápio -->
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 mb-4 overflow-hidden bg-body-tertiary">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-book me-2"></i>Nosso Cardápio</h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (menu == null)
+                    {
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-success" role="status"></div>
+                            <p class="mt-2 text-muted">Buscando delícias...</p>
+                        </div>
+                    }
+                    else if (!menu.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-exclamation-circle display-4 text-muted"></i>
+                            <p class="text-muted mt-3">Ops! O cardápio está sendo atualizado.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="accordion accordion-flush" id="accordionMenu">
+                            @foreach (var categoria in Enum.GetValues<CategoriaProduto>())
+                            {
+                                var itensDaCategoria = menu.Where(x => x.Categoria == categoria).ToList();
+                                if (itensDaCategoria.Any())
+                                {
+                                    <div class="accordion-item border-bottom bg-transparent">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button fw-bold py-3 bg-transparent text-body" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@categoria">
+                                                <span class="fs-5 me-2">@ObterIconeCategoria(categoria)</span>
+                                                @ObterTituloCategoria(categoria) 
+                                                <span class="badge bg-secondary-subtle text-secondary-emphasis ms-2 rounded-pill small">@itensDaCategoria.Count</span>
+                                            </button>
+                                        </h2>
+                                        <div id="collapse-@categoria" class="accordion-collapse collapse show">
+                                            <div class="accordion-body p-0">
+                                                <div class="list-group list-group-flush">
+                                                    @foreach (var item in itensDaCategoria)
+                                                    {
+                                                        <button class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 border-0 px-4 bg-transparent text-body"
+                                                                @onclick="() => AdicionarAoPedido(item)">
+                                                            <span>@item.Nome</span>
+                                                            <span class="text-success fw-bold bg-success-subtle px-2 py-1 rounded">R$ @item.Preco.ToString("F2")</span>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout -->
+        <div class="col-md-5">
+            <div class="card shadow border-0 mb-4 sticky-top bg-body-tertiary" style="top: 100px;">
+                <div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-bag-check me-2"></i>Seu Pedido</h5>
+                    <button class="btn btn-sm btn-link text-white text-decoration-none p-0 opacity-75" @onclick="LimparCarrinho">Limpar tudo</button>
+                </div>
+                <div class="card-body">
+                    @if (!carrinho.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-cart-x display-1 text-body-tertiary"></i>
+                            <p class="text-muted mt-3">Adicione itens para começar!</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-4">
+                            @foreach (var item in carrinho)
+                            {
+                                <div class="d-flex justify-content-between align-items-center mb-3 p-2 rounded bg-body-secondary">
+                                    <div class="d-flex align-items-center">
+                                        <button class="btn btn-sm btn-outline-danger me-2 py-0 px-1 border-1" @onclick="() => RemoverDoPedido(item)">✕</button>
+                                        <span class="fw-medium text-body">@item.Nome</span>
+                                    </div>
+                                    <span class="fw-bold text-body">R$ @item.Preco.ToString("F2")</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="bg-body-secondary p-3 rounded shadow-sm border">
+                            <div class="d-flex justify-content-between small text-body-secondary mb-1">
+                                <span>Subtotal:</span>
+                                <span>R$ @subtotalSimulado.ToString("F2")</span>
+                            </div>
+                            <div class="d-flex justify-content-between small text-success fw-medium mb-3">
+                                <span>Desconto aplicado:</span>
+                                <span>- R$ @descontoSimulado.ToString("F2")</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 fw-bold text-body">Total a Pagar:</span>
+                                <span class="h4 mb-0 fw-bolder text-success">R$ @totalSimulado.ToString("F2")</span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-success w-100 btn-lg mt-4 shadow-sm py-3 fw-bold rounded-pill" @onclick="FinalizarPedido" disabled="@isEnviando">
+                            @(isEnviando ? "Processando..." : "CONFIRMAR PEDIDO")
+                        </button>
+
+                        @if (!string.IsNullOrEmpty(mensagemErro))
+                        {
+                            <div class="alert alert-warning mt-3 border-0 shadow-sm d-flex align-items-center">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <span>@mensagemErro</span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .accordion-button:not(.collapsed) {
+        box-shadow: none;
+    }
+    .accordion-button:focus {
+        box-shadow: none;
+    }
+</style>
+
+@code {
+    private List<ProdutoResposta>? menu;
+    private List<ProdutoResposta> carrinho = new();
+    private bool isEnviando = false;
+    private string? mensagemErro;
+
+    private decimal subtotalSimulado => carrinho.Sum(x => x.Preco);
+    private decimal descontoSimulado => subtotalSimulado - totalSimulado;
+    private decimal totalSimulado => CalcularTotalSimulado();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarDados();
+    }
+
+    private async Task CarregarDados()
+    {
+        try { menu = await Http.GetFromJsonAsync<List<ProdutoResposta>>("api/pedidos/menu"); }
+        catch (Exception ex) { Console.WriteLine($"Erro: {ex.Message}"); }
+    }
+
+    private void AdicionarAoPedido(ProdutoResposta item)
+    {
+        mensagemErro = null;
+        if (carrinho.Any(x => x.Categoria == item.Categoria))
+        {
+            mensagemErro = $"Apenas um item de {item.Categoria} por pedido.";
+            return;
+        }
+        carrinho.Add(item);
+    }
+
+    private void RemoverDoPedido(ProdutoResposta item)
+    {
+        carrinho.Remove(item);
+        mensagemErro = null;
+    }
+
+    private void LimparCarrinho() { carrinho.Clear(); mensagemErro = null; }
+
+    private decimal CalcularTotalSimulado()
+    {
+        var sanduba = carrinho.Any(x => x.Categoria == CategoriaProduto.Sanduiche);
+        var acompanhamento = carrinho.Any(x => x.Categoria == CategoriaProduto.Acompanhamento);
+        var bebida = carrinho.Any(x => x.Categoria == CategoriaProduto.Bebida);
+        var sub = subtotalSimulado;
+        if (sanduba && acompanhamento && bebida) return sub * 0.8m;
+        if (sanduba && bebida) return sub * 0.85m;
+        if (sanduba && acompanhamento) return sub * 0.9m;
+        return sub;
+    }
+
+    private async Task FinalizarPedido()
+    {
+        isEnviando = true;
+        mensagemErro = null;
+        var request = new CriarPedidoRequisicao(carrinho.Select(c => new ItemPedidoRequisicao(c.Id, c.Nome, c.Preco, c.Categoria)).ToList());
+        var response = await Http.PostAsJsonAsync("api/pedidos", request);
+        
+        if (response.IsSuccessStatusCode) { LimparCarrinho(); await CarregarDados(); }
+        else { mensagemErro = "Erro ao processar pedido."; }
+        isEnviando = false;
+    }
+
+    private string ObterTituloCategoria(CategoriaProduto categoria) => categoria switch
+    {
+        CategoriaProduto.Sanduiche => "Sanduíches",
+        CategoriaProduto.Acompanhamento => "Acompanhamentos",
+        CategoriaProduto.Bebida => "Bebidas",
+        _ => categoria.ToString()
+    };
+
+    private string ObterIconeCategoria(CategoriaProduto categoria) => categoria switch
+    {
+        CategoriaProduto.Sanduiche => "🍔",
+        CategoriaProduto.Acompanhamento => "🍟",
+        CategoriaProduto.Bebida => "🥤",
+        _ => "🍴"
+    };
+}

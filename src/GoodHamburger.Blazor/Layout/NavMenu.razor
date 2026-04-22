@@ -1,0 +1,71 @@
+@inject IJSRuntime JS
+
+<nav class="navbar navbar-expand-lg border-bottom sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-success d-flex align-items-center" href="">
+            <span class="fs-2 me-2">🍔</span>
+            <span class="brand-text">Good Hamburger</span>
+        </a>
+        
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <NavLink class="nav-link px-3" href="" Match="NavLinkMatch.All">
+                        <i class="bi bi-house-door me-1"></i> Cardápio
+                    </NavLink>
+                </li>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-gear me-1"></i> Gerenciamento
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 animate slideIn">
+                        <li><NavLink class="dropdown-item py-2" href="gerenciar-produtos">📦 Produtos</NavLink></li>
+                        <li><NavLink class="dropdown-item py-2" href="gerenciar-financeiro">💰 Financeiro</NavLink></li>
+                    </ul>
+                </li>
+
+                <!-- Seletor de Tema no Menubar -->
+                <li class="nav-item ms-lg-3">
+                    <div class="theme-switch-container p-1 rounded-pill d-flex bg-secondary-subtle">
+                        <button class="btn btn-sm rounded-pill border-0 @(currentTheme == "light" ? "bg-white shadow-sm text-warning" : "text-muted")" 
+                                @onclick='() => AlterarTema("light")' title="Modo Claro">
+                            ☀️
+                        </button>
+                        <button class="btn btn-sm rounded-pill border-0 @(currentTheme == "dark" ? "bg-dark shadow-sm text-info" : "text-muted")" 
+                                @onclick='() => AlterarTema("dark")' title="Modo Escuro">
+                            🌙
+                        </button>
+                        <button class="btn btn-sm rounded-pill border-0 @(currentTheme == "auto" ? "bg-primary shadow-sm text-white" : "text-muted")" 
+                                @onclick='() => AlterarTema("auto")' title="Automático">
+                            💻
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private string currentTheme = "auto";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            currentTheme = await JS.InvokeAsync<string>("themeManager.init");
+            StateHasChanged();
+        }
+    }
+
+    private async Task AlterarTema(string theme)
+    {
+        currentTheme = theme;
+        await JS.InvokeVoidAsync("themeManager.setTheme", theme);
+    }
+}

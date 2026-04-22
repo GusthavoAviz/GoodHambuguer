@@ -1,0 +1,222 @@
+@page "/gerenciar-produtos"
+@using GoodHamburger.Application.DTOs
+@using GoodHamburger.Domain.Enums
+@inject HttpClient Http
+
+<PageTitle>Gerenciar Produtos - Good Hamburger</PageTitle>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">📦 Gerenciar Produtos</h2>
+        <button class="btn btn-primary shadow-sm fw-bold" @onclick="PrepararNovoProduto">
+            @(showForm ? "Cancelar" : "+ Novo Produto")
+        </button>
+    </div>
+
+    @if (showForm)
+    {
+        <div class="card shadow-sm mb-4 border-primary bg-body-tertiary">
+            <div class="card-body">
+                <h5 class="card-title mb-3 fw-bold">@(isEditing ? "Editar Produto" : "Cadastrar Novo Item")</h5>
+                
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger py-2 small shadow-sm border-0 d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span>@errorMessage</span>
+                    </div>
+                }
+
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold">Nome do Produto</label>
+                        <input type="text" class="form-control" @bind="produtoModel.Nome" placeholder="Ex: X-Tudo">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Categoria</label>
+                        <select class="form-select" @bind="produtoModel.Categoria">
+                            @foreach (var cat in Enum.GetValues<CategoriaProduto>())
+                            {
+                                <option value="@cat">@cat</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">Preço (R$)</label>
+                        <input type="number" step="0.10" min="0.01" class="form-control" @bind="produtoModel.Preco">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end gap-2">
+                        <button class="btn btn-success flex-grow-1 fw-bold" @onclick="SalvarProduto">Confirmar</button>
+                        @if (isEditing)
+                        {
+                            <button class="btn btn-outline-secondary" @onclick="() => showForm = false">✕</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0 bg-body-tertiary animate slideIn">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th class="ps-4 py-3 border-0">Produto</th>
+                            <th class="py-3 border-0">Categoria</th>
+                            <th class="py-3 border-0">Preço</th>
+                            <th class="text-center py-3 border-0">Status</th>
+                            <th class="text-center pe-4 py-3 border-0">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (produtos == null)
+                        {
+                            <tr><td colspan="5" class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <div class="mt-2 text-muted small">Carregando cardápio...</div>
+                            </td></tr>
+                        }
+                        else if (!produtos.Any())
+                        {
+                            <tr><td colspan="5" class="text-center py-5 text-muted">Nenhum produto cadastrado.</td></tr>
+                        }
+                        else
+                        {
+                            @foreach (var p in produtos.OrderBy(x => x.Categoria).ThenBy(x => x.Nome))
+                            {
+                                <tr class="@(p.Ativo ? "" : "opacity-50 grayscale")">
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="product-icon me-3 bg-secondary-subtle rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                @(p.Categoria == CategoriaProduto.Sanduiche ? "🍔" : p.Categoria == CategoriaProduto.Bebida ? "🥤" : "🍟")
+                                            </div>
+                                            <span class="fw-bold text-body">@p.Nome</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill bg-info-subtle text-info-emphasis px-3">@p.Categoria</span>
+                                    </td>
+                                    <td class="fw-bold text-primary">R$ @p.Preco.ToString("F2")</td>
+                                    <td class="text-center">
+                                        <div class="form-check form-switch d-flex justify-content-center p-0">
+                                            <input class="form-check-input custom-switch m-0" type="checkbox" checked="@p.Ativo" @onchange="() => AlternarStatus(p.Id)">
+                                        </div>
+                                        <div class="small mt-1 @(p.Ativo ? "text-success" : "text-danger")">@(p.Ativo ? "Disponível" : "Indisponível")</div>
+                                    </td>
+                                    <td class="text-center pe-4">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <button class="btn btn-action btn-action-edit" @onclick="() => PrepararEdicao(p)" title="Editar">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                            <button class="btn btn-action btn-action-delete" @onclick="() => DeletarProduto(p.Id)" title="Excluir">
+                                                <i class="bi bi-trash3"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<ProdutoResposta>? produtos;
+    private bool showForm = false;
+    private bool isEditing = false;
+    private Guid editingId;
+    private ProdutoModel produtoModel = new();
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarProdutos();
+    }
+
+    private async Task CarregarProdutos()
+    {
+        produtos = await Http.GetFromJsonAsync<List<ProdutoResposta>>("api/produtos");
+    }
+
+    private void PrepararNovoProduto()
+    {
+        isEditing = false;
+        produtoModel = new();
+        errorMessage = null;
+        showForm = !showForm;
+    }
+
+    private void PrepararEdicao(ProdutoResposta p)
+    {
+        isEditing = true;
+        editingId = p.Id;
+        produtoModel = new ProdutoModel { Nome = p.Nome, Categoria = p.Categoria, Preco = p.Preco };
+        errorMessage = null;
+        showForm = true;
+    }
+
+    private async Task SalvarProduto()
+    {
+        errorMessage = null;
+        if (string.IsNullOrWhiteSpace(produtoModel.Nome)) 
+        {
+            errorMessage = "O nome do produto não pode estar em branco.";
+            return;
+        }
+        if (produtoModel.Preco <= 0)
+        {
+            errorMessage = "O preço deve ser um valor positivo e maior que zero.";
+            return;
+        }
+
+        if (isEditing)
+        {
+            // Implementação de atualização via API (pode precisar de novo endpoint ou PUT no controller)
+            // Para manter a simplicidade com os endpoints atuais, vamos deletar e criar ou atualizar se o controller permitir
+            // Vou assumir que precisamos atualizar o controller para suportar o PUT completo de dados
+            await AtualizarProdutoNoServidor();
+        }
+        else
+        {
+            var request = new CriarProdutoRequisicao(produtoModel.Nome, produtoModel.Preco, produtoModel.Categoria);
+            await Http.PostAsJsonAsync("api/produtos", request);
+        }
+        
+        showForm = false;
+        await CarregarProdutos();
+    }
+
+    private async Task AtualizarProdutoNoServidor()
+    {
+        // Enviar requisição de atualização (PUT) para o backend
+        var response = await Http.PutAsJsonAsync($"api/produtos/{editingId}", produtoModel);
+        if (!response.IsSuccessStatusCode)
+        {
+            errorMessage = "Erro ao atualizar o produto.";
+        }
+    }
+
+    private async Task AlternarStatus(Guid id)
+    {
+        await Http.PutAsync($"api/produtos/{id}/status", null);
+        await CarregarProdutos();
+    }
+
+    private async Task DeletarProduto(Guid id)
+    {
+        await Http.DeleteAsync($"api/produtos/{id}");
+        await CarregarProdutos();
+    }
+
+    public class ProdutoModel
+    {
+        public string Nome { get; set; } = "";
+        public CategoriaProduto Categoria { get; set; } = CategoriaProduto.Sanduiche;
+        public decimal Preco { get; set; } = 5.00m;
+    }
+}

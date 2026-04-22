@@ -1,0 +1,93 @@
+@page "/gerenciar-financeiro"
+@using GoodHamburger.Application.DTOs
+@inject HttpClient Http
+
+<PageTitle>Gerenciar Financeiro - Good Hamburger</PageTitle>
+
+<div class="container">
+    <h2 class="fw-bold mb-4">💰 Gerenciar Financeiro</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card bg-success text-white shadow-sm border-0">
+                <div class="card-body p-4 text-center">
+                    <h5 class="card-title opacity-75 mb-2">Faturamento Total Acumulado</h5>
+                    <h1 class="display-3 fw-bold mb-0">R$ @totalVendido.ToString("F2")</h1>
+                    <p class="mt-2 mb-0 small">Soma de todos os pedidos salvos em pedidos.json</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white py-3">
+            <h5 class="mb-0">📜 Histórico Completo de Vendas</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Identificador</th>
+                            <th>Itens do Pedido</th>
+                            <th class="text-end">Subtotal</th>
+                            <th class="text-end text-success">Desconto</th>
+                            <th class="text-end fw-bold">Total Final</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (vendas == null)
+                        {
+                            <tr><td colspan="6" class="text-center py-5">Carregando histórico financeiro...</td></tr>
+                        }
+                        else if (!vendas.Any())
+                        {
+                            <tr><td colspan="6" class="text-center py-5 text-muted">Nenhuma venda registrada.</td></tr>
+                        }
+                        else
+                        {
+                            @foreach (var v in vendas.OrderByDescending(x => x.CriadoEm))
+                            {
+                                <tr>
+                                    <td>@v.CriadoEm.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="text-muted small">@v.Id.ToString().Substring(0, 8)</td>
+                                    <td>
+                                        @foreach (var item in v.Itens)
+                                        {
+                                            <span class="badge bg-light text-dark border me-1">@item.Nome</span>
+                                        }
+                                    </td>
+                                    <td class="text-end text-muted small">R$ @v.Subtotal.ToString("F2")</td>
+                                    <td class="text-end text-success small">R$ @v.Desconto.ToString("F2")</td>
+                                    <td class="text-end fw-bold">R$ @v.Total.ToString("F2")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<PedidoResposta>? vendas;
+    private decimal totalVendido = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try 
+        {
+            vendas = await Http.GetFromJsonAsync<List<PedidoResposta>>("api/pedidos");
+            var stats = await Http.GetFromJsonAsync<StatsResponse>("api/pedidos/estatisticas");
+            totalVendido = stats?.TotalVendido ?? 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao carregar financeiro: {ex.Message}");
+        }
+    }
+
+    public class StatsResponse { public decimal TotalVendido { get; set; } }
+}
