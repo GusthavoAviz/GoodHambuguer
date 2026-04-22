@@ -73,36 +73,40 @@ Para rodar todos os testes (Unitários e Integração):
 - Suporte a Temas: Alternância entre Modo Claro, Escuro e Automático.
 
 ------------------------------------------------------------------------
-7. REGRAS DE NEGÓCIO E VALIDAÇÕES
+7. DECISÕES DE ARQUITETURA E DESIGN
 ------------------------------------------------------------------------
-- Produtos:
-  * O preço deve ser sempre positivo e maior que zero.
-  * O nome é obrigatório e não pode ser vazio.
-  * Itens inativos não aparecem no cardápio de vendas.
-- Pedidos:
-  * Cálculo automático de subtotal e total final na camada Application.
-  * Validação de integridade para evitar produtos duplicados em um mesmo combo.
-- Arquitetura:
-  * Uso obrigatório de Injeção de Dependência.
-  * Implementação de Result Pattern para retornos consistentes da API.
+O projeto foi estruturado seguindo os princípios da Clean Architecture por 
+diversos motivos:
+- Separação de Responsabilidades: Garante que a lógica de negócio (Domain) 
+  seja independente de detalhes técnicos como UI ou Banco de Dados.
+- Testabilidade: A arquitetura permite o uso extensivo de Mocks e Injeção 
+  de Dependência, facilitando testes unitários e de integração.
+- Escolha da Persistência (JSON): Optou-se pelo uso de arquivos JSON para 
+  facilitar a portabilidade do projeto e agilizar o setup de quem for 
+  testar, eliminando a necessidade de configurar um banco de dados SQL.
+- Result Pattern: Implementado para garantir que a comunicação entre as 
+  camadas seja clara, evitando o uso excessivo de exceções para fluxo.
 
 ------------------------------------------------------------------------
-8. ESTRUTURA DE DADOS
+8. O QUE FICOU DE FORA (BACKLOG / MELHORIAS SUGERIDAS)
+------------------------------------------------------------------------
+Devido ao escopo e tempo de implementação, os seguintes itens foram 
+planejados como melhorias futuras:
+- Autenticação JWT: O sistema está preparado para receber segurança, mas 
+  atualmente as rotas são abertas para facilitar o teste inicial.
+- Banco de Dados Relacional: Futura migração para SQL Server ou PostgreSQL 
+  utilizando Entity Framework Core para maior escalabilidade.
+- Dockerização: Implementação de Docker e Docker Compose para isolamento 
+  completo de ambiente.
+- Notificações em Tempo Real: Uso de SignalR para atualizar o status dos 
+  pedidos instantaneamente no front-end.
+- Logs Estruturados: Implementação de Serilog para monitoramento de erros 
+  em produção.
+
+------------------------------------------------------------------------
+9. ESTRUTURA DE DADOS
 ------------------------------------------------------------------------
 O sistema utiliza arquivos JSON (`produtos.json` e `pedidos.json`) localizados 
-na pasta da WebAPI para persistência simples, dispensando a configuração 
-inicial de um banco de dados SQL para testes rápidos.
-
-------------------------------------------------------------------------
-9. MELHORIAS SUGERIDAS (BACKLOG)
-------------------------------------------------------------------------
-- Autenticação e Autorização (JWT): Implementar um sistema de login para 
-  proteger as rotas de gerenciamento de produtos e financeiro.
-- Identity Integration: Uso de tokens JWT assinados para comunicação segura 
-  entre Blazor e WebAPI.
-- Banco de Dados SQL: Transição do armazenamento JSON para SQL Server ou 
-  PostgreSQL utilizando Entity Framework Core.
-- Dockerização: Criação de arquivos Dockerfile e Docker Compose para 
-  facilitar o deployment em containers.
+na pasta da WebAPI para persistência simples.
 
 ========================================================================
