@@ -1,5 +1,5 @@
 ========================================================================
-🍔 PROJETO GOOD HAMBURGER - GUIA DO DESENVOLVEDOR 🍔
+PROJETO GOOD HAMBURGER - GUIA DO DESENVOLVEDOR
 ========================================================================
 
 Este documento fornece as instruções necessárias para compilar, testar e 
@@ -105,6 +105,4 @@ inicial de um banco de dados SQL para testes rápidos.
 - Dockerização: Criação de arquivos Dockerfile e Docker Compose para 
   facilitar o deployment em containers.
 
-------------------------------------------------------------------------
-Bom apetite e bom desenvolvimento! 🍔🚀
 ========================================================================
